@@ -11,6 +11,7 @@ test('HR can import a fictional candidate and complete a mock DTMF campaign',asy
  await page.getByLabel('Password').fill('playwright-local-password');
  await page.getByRole('button',{name:/Sign in/i}).click();
  await expect(page.getByText('Recruitment overview')).toBeVisible();
+ await page.screenshot({path:'test-results/hros-dashboard-desktop.png',fullPage:true});
  await page.getByRole('button',{name:'Candidates',exact:true}).click();
  await page.getByLabel('Candidate Excel workbook').setInputFiles({
   name:'fixture.xlsx',mimeType:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',buffer:content
@@ -41,4 +42,6 @@ test('mobile navigation remains usable in mock mode',async({page})=>{
  await page.getByRole('button',{name:'Candidates',exact:true}).click();
  await expect(page.getByText('Candidate management')).toBeVisible();
  await expect(page.getByText('MOCK MODE',{exact:true})).toBeVisible();
+ await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);
+ await page.screenshot({path:'test-results/hros-mobile-candidates.png',fullPage:true});
 });
