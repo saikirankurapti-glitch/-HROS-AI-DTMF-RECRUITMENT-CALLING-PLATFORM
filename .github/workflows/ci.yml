@@ -39,6 +39,13 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: Run browser E2E
         run: npm run e2e --workspace=web
+      - name: Upload desktop and mobile UI screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hros-ui-screenshots
+          path: web/test-results/*.png
+          if-no-files-found: ignore
       - name: Upload frontend artifact
         uses: actions/upload-artifact@v4
         if: always()
