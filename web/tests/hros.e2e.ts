@@ -16,7 +16,7 @@ test('HR can import a fictional candidate and complete a mock DTMF campaign',asy
   name:'fixture.xlsx',mimeType:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',buffer:content
  });
  await page.getByRole('button',{name:/Preview Excel/i}).click();
- await expect(page.getByText('Playwright Candidate')).toBeVisible();
+ await expect(page.getByText('Playwright Candidate',{exact:true}).first()).toBeVisible();
  await page.getByRole('button',{name:/Import 1 candidates/i}).click();
  await expect(page.getByText('1 candidates imported')).toBeVisible();
  await page.getByRole('button',{name:'Campaigns',exact:true}).click();
@@ -25,6 +25,6 @@ test('HR can import a fictional candidate and complete a mock DTMF campaign',asy
  await page.getByRole('button',{name:/Create campaign/i}).click();
  await expect(page.getByText('Playwright screening').first()).toBeVisible();
  await page.getByRole('button',{name:/Start mock calls/i}).click();
- await expect(page.getByText('INTERESTED')).toBeVisible({timeout:20000});
+ await expect(page.getByText('INTERESTED',{exact:true})).toBeVisible({timeout:20000});
  await expect(page.getByText('Simulated').first()).toBeVisible();
 });
