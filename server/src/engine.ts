@@ -37,8 +37,7 @@ export class CallingEngine {
  }
  private finish(id:number,status:string,response:string|null=null,error:string|null=null):void {
   const call=getRow<Call>(this.db,'SELECT * FROM calls WHERE id=?',id);
-  if(!call)return;
-  if(terminal.includes(call.status) && !(call.status==='COMPLETED' && !call.ended_at))return;
+  if(!call||terminal.includes(call.status))return;
   const ended=iso();
   const secs=Math.max(0,Math.round((Date.now()-Date.parse(call.started_at.replace(' ','T').replace(/Z?$/,'Z')))/1000));
   this.db.prepare('UPDATE calls SET status=?,dtmf_response=?,ended_at=?,duration_seconds=?,error_message=? WHERE id=?')
