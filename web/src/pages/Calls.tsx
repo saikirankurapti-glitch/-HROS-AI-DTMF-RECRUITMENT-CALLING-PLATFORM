@@ -29,12 +29,13 @@ export function Monitor({work,onRefresh}:{work:Workspace;onRefresh:()=>Promise<v
 }
 
 export function History({work,token,onRefresh,onMessage,onError,onExport}:{work:Workspace;token:string;onRefresh:()=>Promise<void>;onMessage:(s:string)=>void;onError:(s:string)=>void;onExport:(id:number)=>void}){
- const [query,setQuery]=useState(''),[campaign,setCampaign]=useState('all'),[status,setStatus]=useState('all'),[outcome,setOutcome]=useState('all'),[page,setPage]=useState(1);
+ const [query,setQuery]=useState(''),[campaign,setCampaign]=useState('all'),[status,setStatus]=useState('all'),[outcome,setOutcome]=useState('all'),[utcDate,setUtcDate]=useState(''),[order,setOrder]=useState('newest'),[page,setPage]=useState(1);
  const [selected,setSelected]=useState<Call|null>(null),[retryTarget,setRetryTarget]=useState<Call|null>(null),[busy,setBusy]=useState(false);
  const filtered=useMemo(()=>work.calls.filter(c=>(campaign==='all'||String(c.campaign_id)===campaign)&&
   (status==='all'||c.status===status)&&(outcome==='all'||c.dtmf_response===outcome)&&
-  (!query||[c.name,c.phone,c.email,c.provider_call_id,String(c.id)].some(v=>String(v??'').toLowerCase().includes(query.toLowerCase())))
- ),[work.calls,campaign,status,outcome,query]);
+  (!query||[c.name,c.phone,c.email,c.provider_call_id,String(c.id)].some(v=>String(v??'').toLowerCase().includes(query.toLowerCase())))&&
+  (!utcDate||new Date(c.started_at.includes('T')?c.started_at:c.started_at.replace(' ','T')+'Z').toISOString().slice(0,10)===utcDate)
+ ).sort((a,b)=>order==='oldest'?a.id-b.id:order==='status'?a.status.localeCompare(b.status):b.id-a.id),[work.calls,campaign,status,outcome,query,utcDate,order]);
  const shown=filtered.slice((page-1)*12,page*12);
  const canRetry=(c:Call)=>['FAILED','BUSY','NO_ANSWER'].includes(c.status)&&(
   work.byCampaign(c.campaign_id)?.campaign.retry_limit??0)>=c.attempt_number &&
@@ -54,6 +55,8 @@ export function History({work,token,onRefresh,onMessage,onError,onExport}:{work:
     <label className="filter-select">Campaign<select aria-label="Filter calls by campaign" value={campaign} onChange={e=>{setCampaign(e.target.value);setPage(1);}}><option value="all">All campaigns</option>{work.campaigns.map(c=><option value={c.id} key={c.id}>{c.name}</option>)}</select></label>
     <label className="filter-select">Status<select aria-label="Filter calls by status" value={status} onChange={e=>{setStatus(e.target.value);setPage(1);}}><option value="all">All statuses</option>{[...new Set(work.calls.map(c=>c.status))].map(s=><option key={s}>{s}</option>)}</select></label>
     <label className="filter-select">DTMF<select aria-label="Filter calls by outcome" value={outcome} onChange={e=>{setOutcome(e.target.value);setPage(1);}}><option value="all">All outcomes</option>{['INTERESTED','NOT_INTERESTED','NO_RESPONSE'].map(s=><option key={s}>{s}</option>)}</select></label>
+    <label className="filter-select">UTC date<input aria-label="Filter calls by UTC date" type="date" value={utcDate} onChange={e=>{setUtcDate(e.target.value);setPage(1);}}/></label>
+    <label className="filter-select">Sort<select aria-label="Sort call history" value={order} onChange={e=>{setOrder(e.target.value);setPage(1);}}><option value="newest">Newest first</option><option value="oldest">Oldest first</option><option value="status">Status A–Z</option></select></label>
    </div>
    {shown.length?<div className="table-scroll"><table className="data-table"><thead><tr><th>ID</th><th>Candidate</th><th>Campaign</th><th>Status</th><th>DTMF response</th><th>Duration</th><th>Mode</th><th>Details</th></tr></thead><tbody>{shown.map(c=><tr key={c.id}>
     <td className="mono">#{c.id}</td><td><strong>{c.name??'Candidate #'+c.candidate_id}</strong><span className="cell-meta">{maskPhone(c.phone)}</span></td>
