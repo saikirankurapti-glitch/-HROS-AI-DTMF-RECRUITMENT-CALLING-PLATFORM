@@ -1,5 +1,5 @@
 import {useMemo,useState,type FormEvent} from 'react';
-import {ArrowDownToLine,ArrowRight,CalendarClock,CheckCircle2,Clock,Pause,PhoneCall,Play,Plus,ShieldCheck,Square,Target,UsersRound} from 'lucide-react';
+import {ArrowDownToLine,ArrowRight,CalendarClock,Clock,Pause,PhoneCall,Play,Plus,ShieldCheck,Square,Target,UsersRound} from 'lucide-react';
 import {api,COMPLETE,COUNT,dateLabel,PERCENT,maskPhone,type Campaign} from '../lib/client';
 import type {Workspace} from '../lib/useWorkspace';
 import {Badge,Button,Dialog,Empty,Panel,SearchBox} from '../components/ui';
