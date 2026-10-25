@@ -28,5 +28,17 @@ test('HR can import a fictional candidate and complete a mock DTMF campaign',asy
  await expect(page.getByRole('dialog')).toBeVisible();
  await page.getByRole('button',{name:'Confirm start'}).click();
  await expect(page.getByText('INTERESTED',{exact:true})).toBeVisible({timeout:20000});
- await expect(page.getByText('Simulated').first()).toBeVisible();
+ await expect(page.getByText('MOCK MODE',{exact:true})).toBeVisible();
+});
+
+test('mobile navigation remains usable in mock mode',async({page})=>{
+ await page.setViewportSize({width:390,height:844});
+ await page.goto('/');
+ await page.getByLabel('Password').fill('playwright-local-password');
+ await page.getByRole('button',{name:/Sign in/i}).click();
+ await expect(page.getByText('Recruitment overview')).toBeVisible();
+ await page.getByRole('button',{name:'Open navigation'}).click();
+ await page.getByRole('button',{name:'Candidates',exact:true}).click();
+ await expect(page.getByText('Candidate management')).toBeVisible();
+ await expect(page.getByText('MOCK MODE',{exact:true})).toBeVisible();
 });
