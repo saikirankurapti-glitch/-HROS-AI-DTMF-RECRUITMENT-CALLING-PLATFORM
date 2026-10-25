@@ -76,3 +76,7 @@ Documentation:
 - docs/compliance.md
 - docs/troubleshooting.md
 - docs/architecture.mmd
+
+## Enterprise UI redesign
+
+The HROS frontend has a responsive enterprise interface with eight connected navigation views, API-backed KPIs/charts, candidate CRM, campaign confirmations, a polling monitor, history/exports, and read-only telephony/settings. See [UI redesign notes](docs/UI_REDESIGN.md) for metric definitions, file changes, testing and current limitations.
