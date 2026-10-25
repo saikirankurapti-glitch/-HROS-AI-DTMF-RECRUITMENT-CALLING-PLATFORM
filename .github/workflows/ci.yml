@@ -46,3 +46,34 @@ jobs:
           name: hros-web-dist
           path: web/dist
           if-no-files-found: ignore
+
+  docker-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure safe mock-only test environment
+        run: |
+          cp .env.example .env
+          sed -i 's/^HROS_PASSWORD=.*/HROS_PASSWORD=ci-only-local-password/' .env
+          sed -i 's/^SESSION_SECRET=.*/SESSION_SECRET=ci-only-32-characters-secret-change-me/' .env
+      - name: Validate Docker Compose
+        run: docker compose config --quiet
+      - name: Build and start mock services
+        run: docker compose up --build -d api web
+      - name: Verify HTTP health and UI
+        run: |
+          for attempt in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:3001/health && curl -fsS http://127.0.0.1:8080/ >/dev/null; then
+              exit 0
+            fi
+            sleep 3
+          done
+          docker compose logs --tail=150 api web
+          exit 1
+      - name: Print status
+        if: always()
+        run: docker compose ps
+      - name: Stop containers
+        if: always()
+        run: docker compose down -v
