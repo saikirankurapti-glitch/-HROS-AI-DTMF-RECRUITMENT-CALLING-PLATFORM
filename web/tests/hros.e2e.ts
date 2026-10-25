@@ -25,6 +25,8 @@ test('HR can import a fictional candidate and complete a mock DTMF campaign',asy
  await page.getByRole('button',{name:/Create campaign/i}).click();
  await expect(page.getByText('Playwright screening').first()).toBeVisible();
  await page.getByRole('button',{name:/Start mock calls/i}).click();
+ await expect(page.getByRole('dialog')).toBeVisible();
+ await page.getByRole('button',{name:'Confirm start'}).click();
  await expect(page.getByText('INTERESTED',{exact:true})).toBeVisible({timeout:20000});
  await expect(page.getByText('Simulated').first()).toBeVisible();
 });
