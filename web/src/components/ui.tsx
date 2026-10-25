@@ -1,4 +1,4 @@
-import type {ReactNode,ButtonHTMLAttributes} from 'react';
+import {useEffect,type ReactNode,type ButtonHTMLAttributes} from 'react';
 import {AlertTriangle,ArrowDown,ArrowUp,ChevronLeft,ChevronRight,FileQuestion,Search,X} from 'lucide-react';
 import {COUNT,statusTone} from '../lib/client';
 
@@ -16,7 +16,7 @@ export function Empty({title,description,action}:{title:string;description:strin
  return <div className="empty"><div className="empty-mark"><FileQuestion size={22}/></div><strong>{title}</strong><p>{description}</p>{action}</div>;
 }
 export function Loading({label='Loading workspace data...'}:{label?:string}){
- return <div className="loading-view" role="status" aria-live="polite"><div className="spinner"/>{label}</div>;
+ return <div className="workspace-skeleton" role="status" aria-live="polite" aria-label={label}><div className="skeleton-title"/><div className="skeleton-subtitle"/><div className="skeleton-metrics">{[0,1,2,3,4,5].map(i=><div className="skeleton-card" key={i}><div/><span/><strong/></div>)}</div><div className="skeleton-panels"><div/><div/></div><span className="sr-only">{label}</span></div>;
 }
 export function SearchBox({value,onChange,placeholder='Search',label='Search records'}:{value:string;onChange:(s:string)=>void;placeholder?:string;label?:string}){
  return <label className="searchbox"><Search size={17}/><input aria-label={label} type="search" value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder}/></label>;
@@ -33,6 +33,7 @@ export function SortHeading({label,field,sort,onChange}:{label:string;field:stri
  return <button className="sort-link" onClick={()=>onChange(field)} title={'Sort by '+label}>{label}{sort===field?<ArrowUp size={13}/>:sort==='-'+field?<ArrowDown size={13}/>:null}</button>;
 }
 export function Dialog({title,description,children,onClose,action,label='Confirm',danger=false,busy=false}:{title:string;description?:string;children?:ReactNode;onClose:()=>void;action:()=>void;label?:string;danger?:boolean;busy?:boolean}){
+ useEffect(()=>{const handle=(e:KeyboardEvent)=>{if(e.key==='Escape')onClose();};document.addEventListener('keydown',handle);return()=>document.removeEventListener('keydown',handle);},[onClose]);
  return <div className="modal-backdrop" onMouseDown={e=>{if(e.target===e.currentTarget)onClose();}}>
   <div className="modal card-dialog" role="dialog" aria-modal="true" aria-labelledby="dialog-heading">
    <div className="dialog-top"><div className={'dialog-icon '+(danger?'dialog-icon-danger':'')}><AlertTriangle size={21}/></div><button aria-label="Close dialog" className="icon-button" onClick={onClose}><X size={19}/></button></div>
@@ -43,6 +44,7 @@ export function Dialog({title,description,children,onClose,action,label='Confirm
  </div>;
 }
 export function Drawer({title,subtitle,onClose,children}:{title:string;subtitle?:string;onClose:()=>void;children:ReactNode}){
+ useEffect(()=>{const handle=(e:KeyboardEvent)=>{if(e.key==='Escape')onClose();};document.addEventListener('keydown',handle);return()=>document.removeEventListener('keydown',handle);},[onClose]);
  return <div className="drawer-scrim" onMouseDown={e=>{if(e.target===e.currentTarget)onClose();}}>
   <aside className="drawer" role="dialog" aria-modal="true" aria-label={title}>
    <div className="drawer-header"><div><span className="eyebrow">RECORD DETAIL</span><h2>{title}</h2>{subtitle&&<p>{subtitle}</p>}</div><button className="icon-button" aria-label="Close details" onClick={onClose}><X size={20}/></button></div>
