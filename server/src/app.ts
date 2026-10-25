@@ -165,6 +165,7 @@ export function buildApp(db:Database,engine:CallingEngine) {
   return res.type('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet').send(buf);
  }));
  app.use((err:unknown,_req:Request,res:Response,_next:NextFunction)=>{
+  void _next;
   const invalid=err instanceof ZodError;
   const error=err instanceof Error?err.message:'Unexpected error';
   const code=invalid||/missing|required|Invalid|duplicate|Only|Upload|Phone|Excel|column|workbook/i.test(error)?400:500;
