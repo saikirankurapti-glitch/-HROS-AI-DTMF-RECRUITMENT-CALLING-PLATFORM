@@ -124,7 +124,7 @@ export class AsteriskTelephonyProvider implements TelephonyProvider {
  }
  async playAudio(id:string,audioName:string):Promise<void> {
   if(!/^[a-zA-Z0-9_-]+$/.test(audioName)) throw new Error('Invalid audio identifier');
-  await this.request('/channels/'+encodeURIComponent(id)+'/play','POST',new URLSearchParams({media:'sound:'+audioName}));
+  await this.request('/channels/'+encodeURIComponent(id)+'/play','POST',new URLSearchParams({media:'sound:hros/'+audioName}));
   // This starts playback; configure WAV lengths and timings to allow playback to complete.
   await new Promise(resolve=>setTimeout(resolve,3000));
  }
