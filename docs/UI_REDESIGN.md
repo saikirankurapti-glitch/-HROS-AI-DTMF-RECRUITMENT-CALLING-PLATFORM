@@ -2,7 +2,7 @@
 
 ## Scope
 
-This UI improvement is committed directly to \`feat/hros-mvp\`; it preserves the existing Express API, SQLite migrations, telephony adapters, authentication, scheduler, Excel contracts, and no-public-calling default.
+This UI improvement is committed directly to `feat/hros-mvp`; it preserves the existing Express API, SQLite migrations, telephony adapters, authentication, scheduler, Excel contracts, and no-public-calling default.
 
 ### Design system
 
@@ -47,20 +47,20 @@ This UI improvement is committed directly to \`feat/hros-mvp\`; it preserves the
 
 ## Changed / added files
 
-- \`web/src/App.tsx\` — authentication and page orchestration.
-- \`web/src/styles.css\` — design tokens, desktop/tablet/mobile layout, component styles and skeletons.
-- \`web/src/lib/client.ts\` — typed API client and formatting helpers.
-- \`web/src/lib/useWorkspace.ts\` — API-backed polling, aggregation, and error handling.
-- \`web/src/components/ui.tsx\` — shared buttons, statuses, dialogs, drawers, metrics, sorting and pagination.
-- \`web/src/components/Shell.tsx\` — navigation and environment indicator.
-- \`web/src/pages/Overview.tsx\`, \`Candidates.tsx\`, \`Campaigns.tsx\`, \`Calls.tsx\`, \`Analytics.tsx\`, \`TelephonySettings.tsx\` — functional page modules.
-- \`web/src/App.test.tsx\` and \`web/tests/hros.e2e.ts\` — updated authentication/UI, data correctness, confirmation and mobile navigation tests.
+- `web/src/App.tsx` — authentication and page orchestration.
+- `web/src/styles.css` — design tokens, desktop/tablet/mobile layout, component styles and skeletons.
+- `web/src/lib/client.ts` — typed API client and formatting helpers.
+- `web/src/lib/useWorkspace.ts` — API-backed polling, aggregation, and error handling.
+- `web/src/components/ui.tsx` — shared buttons, statuses, dialogs, drawers, metrics, sorting and pagination.
+- `web/src/components/Shell.tsx` — navigation and environment indicator.
+- `web/src/pages/Overview.tsx`, `Candidates.tsx`, `Campaigns.tsx`, `Calls.tsx`, `Analytics.tsx`, `TelephonySettings.tsx` — functional page modules.
+- `web/src/App.test.tsx` and `web/tests/hros.e2e.ts` — updated authentication/UI, data correctness, confirmation and mobile navigation tests.
 
 ## Validation commands
 
-Run on Node 22+ with a real \`.env\` where required:
+Run on Node 22+ with a real `.env` where required:
 
-\`\`\`bash
+```bash
 npm ci
 npm run lint
 npm run typecheck
@@ -69,7 +69,7 @@ npm run build
 npm run e2e --workspace=web
 docker compose config
 docker compose up --build -d api web
-\`\`\`
+```
 
 GitHub Actions workflow also validates Docker Compose, starts the safe mock-only API and web services, and checks both HTTP endpoints. **Consult the latest run for verified results**; do not assume local environment or live SIP tests passed.
 
