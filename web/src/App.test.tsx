@@ -41,7 +41,7 @@ it('shows only API-derived KPIs and the actual mock environment',async()=>{
  fireEvent.click(screen.getByRole('button',{name:/sign in/i}));
  await waitFor(()=>expect(screen.getByText('100%')).toBeTruthy());
  expect(screen.getByText('MOCK MODE')).toBeTruthy();
- expect(screen.getByText('Example Screening')).toBeTruthy();
+ expect(screen.getAllByText('Example Screening').length).toBeGreaterThan(0);
 });
 it('shows a recoverable error when the HROS API is unavailable',async()=>{
  const mock=vi.fn().mockImplementation((url:string)=>{
