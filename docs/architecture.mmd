@@ -1,0 +1,15 @@
+flowchart TD
+  HR[HR Dashboard React] --> API[Express API / Auth / Zod]
+  API --> XLSX[ExcelJS preview / import / export]
+  API --> DB[(SQLite persistent volume)]
+  API --> Scheduler[Persistent scheduler / retries]
+  Scheduler --> Guard[Consent / Opt-out / Rate / Concurrency]
+  Guard --> Adapter{Provider selection}
+  Adapter --> Mock[Mock deterministic simulator]
+  Adapter --> ARI[Asterisk ARI local SIP]
+  ARI --> Softphone[SIP extensions 1001 / 1002]
+  Mock --> Events[Call outcomes: DTMF 1 / 2 / none]
+  ARI --> Events
+  Events --> DB
+  DB --> Reports[Analytics + Excel reports]
+  Reports --> HR

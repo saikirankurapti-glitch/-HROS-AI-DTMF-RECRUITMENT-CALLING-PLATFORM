@@ -1,0 +1,8 @@
+[general]
+enabled=yes
+pretty=yes
+allowed_origins=*
+[$ASTERISK_ARI_USER]
+type=user
+read_only=no
+password=$ASTERISK_ARI_PASSWORD
