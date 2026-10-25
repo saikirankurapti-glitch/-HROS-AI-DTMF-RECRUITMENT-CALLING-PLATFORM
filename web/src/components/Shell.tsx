@@ -35,7 +35,7 @@ export function Shell({page,onPage,system,onLogout,children}:{page:Page;onPage:(
     </div>)}
    </nav>
    <div className="sidebar-footer">
-    <div className="provider-card"><div className="provider-mark"><ShieldCheck size={17}/></div><div><strong>{system?.simulated===false?'Asterisk connected mode':'Simulation environment'}</strong><span>{system?.simulated===false?'ARI adapter configured':'Safe for mock testing'}</span></div></div>
+    <div className="provider-card"><div className="provider-mark"><ShieldCheck size={17}/></div><div><strong>{system===null?'Checking provider':system.simulated===false?'Asterisk configured mode':'Simulation environment'}</strong><span>{system===null?'Waiting for backend':system.simulated===false?'ARI adapter selected':'Safe for mock testing'}</span></div></div>
     <a href="https://github.com/saikirankurapti-glitch/-HROS-AI-DTMF-RECRUITMENT-CALLING-PLATFORM/blob/feat/hros-mvp/README.md" target="_blank" rel="noreferrer" className="help-link"><Headphones size={16}/><span>Help & documentation</span></a>
    </div>
   </aside>
@@ -45,7 +45,7 @@ export function Shell({page,onPage,system,onLogout,children}:{page:Page;onPage:(
     <div className="crumbs"><button className="mobile-menu" aria-label="Open navigation" onClick={()=>setMobileOpen(true)}><Menu size={21}/></button>
      <span className="breadcrumb-root">HROS workspace</span><ChevronRight size={15}/><strong>{PAGE_NAMES[page]}</strong>
     </div>
-    <div className="topbar-right"><div className={'environment-pill '+(system?.simulated===false?'env-live':'env-mock')}><span className="environment-dot"/>{system?.simulated===false?'ASTERISK MODE':'MOCK MODE'}</div>
+    <div className="topbar-right"><div className={'environment-pill '+(system?.simulated===false?'env-live':'env-mock')}><span className="environment-dot"/>{system===null?'CHECKING MODE':system.simulated===false?'ASTERISK MODE':'MOCK MODE'}</div>
      <button className="account-trigger" aria-expanded={accountOpen} aria-label="Account menu" onClick={()=>setAccountOpen(x=>!x)}><span className="account-avatar">HR</span><span className="account-copy"><strong>HR Administrator</strong><small>Workspace admin</small></span><ChevronDown size={14}/></button>
      {accountOpen&&<div className="account-menu"><div className="account-meta">Signed in as <strong>admin</strong></div><button onClick={()=>{setAccountOpen(false);navigate('settings');}}><Settings2 size={15}/> Workspace settings</button><button onClick={()=>{setAccountOpen(false);onLogout();}}><LogOut size={15}/> Sign out</button></div>}
     </div>
