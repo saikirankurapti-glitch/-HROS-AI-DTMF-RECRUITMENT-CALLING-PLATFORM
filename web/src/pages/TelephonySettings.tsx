@@ -2,12 +2,12 @@ import {Activity,AlertTriangle,BookOpen,CheckCircle2,ExternalLink,LockKeyhole,Ph
 import {COUNT} from '../lib/client';
 import type {Workspace} from '../lib/useWorkspace';
 import {Badge,Panel} from '../components/ui';
-const repo='https://github.com/saikirankurapti-glitch/-HROS-AI-DTMF-RECRUITMENT-CALLING-PLATFORM/blob/feat/hros-mvp/';
+const repo='https://github.com/saikirankurapti-glitch/-HROS-AI-DTMF-RECRUITMENT-CALLING-PLATFORM/blob/feat/infobip-voice-integration/';
 export function Telephony({work}:{work:Workspace}){
  const sys=work.system;
  return <>
   <section className="page-header"><div><div className="eyebrow">INTEGRATIONS / PROVIDERS</div><h1>Telephony integration</h1><p>Inspect the current adapter mode and follow setup guidance for local SIP testing.</p></div></section>
-  <div className="integration-hero"><div className="integration-icon"><PhoneCall size={25}/></div><div><span className="eyebrow">CONFIGURED PROVIDER</span><h2>{sys?.provider==='asterisk'?'Asterisk ARI':'MockTelephonyProvider'}</h2><p>{sys?.simulated===false?'Asterisk adapter is selected. Live SIP connectivity and audio playback are not verified by this endpoint.':'This adapter produces deterministic, simulated call outcomes with no public calling provider.'}</p></div><Badge value={sys?.simulated===false?'ASTERISK MODE':'MOCK MODE'} tone={sys?.simulated===false?'warning':'info'}/></div>
+  <div className="integration-hero"><div className="integration-icon"><PhoneCall size={25}/></div><div><span className="eyebrow">CONFIGURED PROVIDER</span><h2>{sys?.provider==='asterisk'?'Asterisk ARI':sys?.provider==='infobip'?'Infobip Calls API':'MockTelephonyProvider'}</h2><p>{sys?.provider==='infobip'?'Infobip adapter selected. Live carrier calling is not verified until the account, caller ID, public HTTPS event subscription, and a consented test call succeed.':sys?.provider==='asterisk'?'Asterisk adapter is selected. Live SIP connectivity and audio playback are not verified by this endpoint.':'This adapter produces deterministic, simulated call outcomes with no public calling provider.'}</p></div><Badge value={sys?.provider==='infobip'?'INFOBIP MODE':sys?.provider==='asterisk'?'ASTERISK MODE':'MOCK MODE'} tone={sys?.simulated===false?'warning':'info'}/></div>
   <div className="dashboard-two">
    <Panel title="Environment status" subtitle="Values reported by the protected HROS system endpoint">
     <div className="setting-list"><div><span><Server size={17}/> Provider adapter</span><strong>{sys?.provider??'Checking...'}</strong></div><div><span><Activity size={17}/> Active engine calls</span><strong>{COUNT(sys?.activeCalls)}</strong></div>
@@ -16,12 +16,12 @@ export function Telephony({work}:{work:Workspace}){
    </Panel>
    <Panel title="Integration readiness" subtitle="Production availability requires separate verification">
     <div className="readiness-list"><div><CheckCircle2 size={18}/><div><strong>Mock calling adapter</strong><span>Available for local development and automated tests</span></div></div>
-     <div><AlertTriangle size={18}/><div><strong>Live SIP call verification</strong><span>Not established by the dashboard. Test with registered softphones and approved provider.</span></div></div>
-     <div><AlertTriangle size={18}/><div><strong>Audio and ARI recovery</strong><span>Playback event synchronization and reconnection require further work.</span></div></div></div>
+     <div><AlertTriangle size={18}/><div><strong>Live carrier call verification</strong><span>Not established by this dashboard. Test only with an authorized route and a consented number.</span></div></div>
+     <div><AlertTriangle size={18}/><div><strong>Audio, DTMF, and event delivery</strong><span>Requires a reachable HTTPS webhook, event subscription association, and a successful carrier test.</span></div></div></div>
    </Panel>
   </div>
   <Panel title="Setup and documentation" subtitle="Server configuration is managed outside the browser">
-   <div className="doc-links"><a href={repo+'docs/telephony.md'} target="_blank" rel="noreferrer"><PhoneCall size={18}/><span><strong>Local SIP & Asterisk setup</strong><small>Softphone registration, audio naming, and provider adapter</small></span><ExternalLink size={15}/></a>
+   <div className="doc-links"><a href={repo+'docs/infobip.md'} target="_blank" rel="noreferrer"><PhoneCall size={18}/><span><strong>Infobip Calls API setup</strong><small>API credentials, HTTPS event subscription, DTMF, and single-number test</small></span><ExternalLink size={15}/></a><a href={repo+'docs/telephony.md'} target="_blank" rel="noreferrer"><PhoneCall size={18}/><span><strong>Local SIP & Asterisk setup</strong><small>Softphone registration, audio naming, and provider adapter</small></span><ExternalLink size={15}/></a>
     <a href={repo+'docs/compliance.md'} target="_blank" rel="noreferrer"><BookOpen size={18}/><span><strong>Telecom & privacy checklist</strong><small>Consent, opt-out, caller authorization, and operating policies</small></span><ExternalLink size={15}/></a>
     <a href={repo+'docs/troubleshooting.md'} target="_blank" rel="noreferrer"><Wifi size={18}/><span><strong>Troubleshooting guide</strong><small>API health, local SIP registration, and audio debugging</small></span><ExternalLink size={15}/></a></div>
   </Panel>
