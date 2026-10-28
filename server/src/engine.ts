@@ -26,6 +26,7 @@ export class CallingEngine {
  constructor(private db:Database,private provider:TelephonyProvider) {}
  start():void {if(!this.timer)this.timer=setInterval(()=>{void this.tick();},1000);}
  shutdown():void {if(this.timer)clearInterval(this.timer);this.timer=null;this.provider.shutdown();}
+ handleProviderEvent(payload:unknown):void {this.provider.handleEvent?.(payload);}
  async cancelCampaign(id:number):Promise<void> {
   this.db.prepare("UPDATE campaigns SET status='CANCELLED' WHERE id=?").run(id);
   for(const [callId,item] of this.active) {

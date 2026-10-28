@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto';
 import { EventEmitter } from 'node:events';
 import WebSocket from 'ws';
 import type { Candidate, Scenario } from './types.js';
+import { InfobipTelephonyProvider } from './infobip.js';
 
 export type AnswerState = 'answered'|'no_answer'|'busy'|'failed';
 export interface TelephonyProvider {
@@ -13,6 +14,7 @@ export interface TelephonyProvider {
  collectDtmf(callId:string, timeoutMs:number):Promise<string|null>;
  endCall(callId:string):Promise<void>;
  shutdown():void;
+ handleEvent?(payload:unknown):void;
 }
 export class MockTelephonyProvider implements TelephonyProvider {
  readonly name='mock'; readonly simulated=true;
@@ -145,5 +147,6 @@ export class AsteriskTelephonyProvider implements TelephonyProvider {
 }
 export function createProvider():TelephonyProvider {
  if(process.env.TELEPHONY_MODE==='asterisk') return new AsteriskTelephonyProvider();
+ if(process.env.TELEPHONY_MODE==='infobip') return new InfobipTelephonyProvider();
  return new MockTelephonyProvider();
 }

@@ -28,6 +28,20 @@ export function buildApp(db:Database,engine:CallingEngine) {
   if(!checkCredentials(req.body?.username,req.body?.password))return res.status(401).json({error:'Invalid credentials or server auth not configured'});
   return res.json({token:token()});
  });
+ // Infobip Calls API events use a dedicated Basic-authenticated subscription webhook.
+ // This URL must be publicly reachable over HTTPS; never use the dashboard session token here.
+ app.post('/api/telephony/infobip/events',(req,res)=>{
+  const username=process.env.INFOBIP_WEBHOOK_USERNAME;
+  const password=process.env.INFOBIP_WEBHOOK_PASSWORD;
+  if(!username||!password||username.startsWith('replace-')||password.startsWith('replace-'))
+   return res.status(503).json({error:'Infobip event webhook is not configured'});
+  const header=String(req.headers.authorization||'');
+  const expected='Basic '+Buffer.from(username+':'+password).toString('base64');
+  const a=Buffer.from(header),b=Buffer.from(expected);
+  if(a.length!==b.length||!timingSafeEqual(a,b))return res.status(401).set('WWW-Authenticate','Basic realm="HROS Infobip webhook"').json({error:'Unauthorized'});
+  engine.handleProviderEvent(req.body);
+  return res.status(200).end();
+ });
  // This endpoint is signed independently, not accessible with a dashboard token.
  app.post('/api/telephony/events',(req,res)=>{
   const secret=process.env.CALL_WEBHOOK_SECRET;
@@ -45,7 +59,7 @@ export function buildApp(db:Database,engine:CallingEngine) {
  app.use('/api',authenticate);
  app.get('/api/system',(_req,res)=>res.json({
   provider:process.env.TELEPHONY_MODE||'mock',
-  simulated:process.env.TELEPHONY_MODE!=='asterisk',
+  simulated:!['asterisk','infobip'].includes(process.env.TELEPHONY_MODE||'mock'),
   publicCallingEnabled:process.env.PUBLIC_CALLING_ENABLED==='true',
   activeCalls:engine.activeCount()
  }));
