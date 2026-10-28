@@ -11,6 +11,25 @@ HROS supports Infobip Calls API as an opt-in provider. Mock remains the default.
 5. Associate the subscription with the Calls configuration. The Infobip console should no longer show zero subscription associations.
 6. Confirm Calls API outbound traffic and the India route/caller-ID are enabled for your account. Some routes require an Infobip-leased or otherwise authorized voice number.
 
+## Test the trial's Voice Messaging API separately
+
+The onboarding page's `/tts/3/advanced` example sends a one-way text-to-speech voice message. It is **not** the interactive Calls API used by the HROS recruitment call flow.
+
+1. Revoke any API key that was pasted into a chat, ticket, or other shared place, then create a replacement in Infobip. Store it only in your local `.env`.
+2. Verify your own recipient number in Infobip.
+3. Set these local environment variables using a sender value that Infobip explicitly authorizes for your account. Do not assume the example sender in the portal is assigned to your account:
+   - `INFOBIP_API_KEY`
+   - `INFOBIP_TEST_TO` (your verified phone number, digits only, including country code)
+   - `INFOBIP_TEST_FROM` (authorized sender value from your account)
+   - Optional: `INFOBIP_BASE_URL` and `INFOBIP_LANGUAGE`
+4. From the repository root, run with Node.js 22+:
+   ```powershell
+   node --env-file=.env scripts/infobip-voice-message-test.mjs
+   ```
+5. An HTTP success means the request was accepted, not necessarily delivered. Check Infobip Logs for the final message status. The script exits nonzero for HTTP errors.
+
+The script never embeds API credentials or a recipient number in source control. Use only your own verified number for this test. This test consumes a trial voice message/call allowance and does not verify Calls API configuration, event webhooks, or DTMF handling.
+
 ## Server environment
 
 Set these on the server only; never put API keys in the browser or commit them:
