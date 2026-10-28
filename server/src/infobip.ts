@@ -94,7 +94,7 @@ export class InfobipTelephonyProvider implements TelephonyProvider {
  async playAudio(id:string,audioName:string):Promise<void> {
   if(!this.states.has(id))throw new Error('Unknown Infobip call ID');
   const prompt=this.prompt(audioName);
-  await this.request('/calls/1/calls/'+encodeURIComponent(id)+'/say',{callId:id,text:prompt.text,language:prompt.language,loopCount:1,...(audioName.includes('_question_')?{stopOn:{type:'DTMF',terminator:'any'}}:{})});
+  await this.request('/calls/1/calls/'+encodeURIComponent(id)+'/say',{callId:id,text:prompt.text,language:prompt.language,loopCount:1,...(audioName.includes('_question_')?{...(audioName.includes('_question_')?{stopOn:{type:'DTMF',terminator:'any'}}:{})}:{})});
   const event=await this.waitFor(id,['SAY_FINISHED'],60000);
   if(!event&&!this.state(id).ended)throw new Error('Timed out waiting for Infobip SAY_FINISHED event; verify the event subscription and public webhook');
  }
