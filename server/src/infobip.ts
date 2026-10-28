@@ -5,7 +5,7 @@ type EventWaiter = { types: string[]; resolve: (event: InfobipEvent | null) => v
 type InfobipEvent = { type?: string; callId?: string; id?: string; properties?: Record<string, unknown>; [key: string]: unknown };
 type CallState = { answer?: AnswerState; established?: boolean; ended?: boolean; digit?: string; events: Map<string,InfobipEvent>; waiters: Set<EventWaiter> };
 
-function normalizeEventType(value: unknown): string { return String(value ?? '').toUpperCase().replace(/[.\\s-]/g, '_'); }
+function normalizeEventType(value: unknown): string { return String(value ?? '').toUpperCase().replace(/[.\s-]/g, '_'); }
 function callIdOf(event: InfobipEvent): string { return String(event.callId ?? (event as any).call_id ?? (event as any).call?.id ?? ''); }
 function eventList(payload: unknown): InfobipEvent[] {
  if(Array.isArray(payload)) return payload.flatMap(eventList);
@@ -46,8 +46,8 @@ export class InfobipTelephonyProvider implements TelephonyProvider {
  async startCall(candidate:Candidate):Promise<string> {
   if(process.env.PUBLIC_CALLING_ENABLED!=='true'||process.env.MOCK_ONLY!=='false') throw new Error('Infobip public calls are disabled. Explicitly authorize a single consented test in server environment first.');
   if(!candidate.consent||candidate.opt_out) throw new Error('Calling blocked: candidate consent is missing or candidate opted out');
-  if(!/^\\+[1-9]\\d{7,14}$/.test(candidate.phone)) throw new Error('Infobip requires a valid E.164 candidate phone number');
-  const payload:any={endpoint:{phoneNumber:candidate.phone.replace(/\\D/g,''),type:'PHONE'},callsConfigurationId:this.configId,connectTimeout:30,maxDuration:180,customData:{hrosCandidateId:String(candidate.id),hrosCandidateName:candidate.name}};
+  if(!/^\+[1-9]\d{7,14}$/.test(candidate.phone)) throw new Error('Infobip requires a valid E.164 candidate phone number');
+  const payload:any={endpoint:{phoneNumber:candidate.phone.replace(/\D/g,''),type:'PHONE'},callsConfigurationId:this.configId,connectTimeout:30,maxDuration:180,customData:{hrosCandidateId:String(candidate.id),hrosCandidateName:candidate.name}};
   if(this.fromNumber) payload.from=this.fromNumber;
   const response=await this.request('/calls/1/calls',payload);
   const id=String(response?.id??response?.callId??response?.call?.id??'');
@@ -68,7 +68,7 @@ export class InfobipTelephonyProvider implements TelephonyProvider {
    else if(type==='DTMF_COLLECTED'||type==='SAY_FINISHED'){const value=String(props.dtmf??props.digits??props.input??props.value??props.capturedDtmf??'');if(/^[0-9*#]$/.test(value))state.digit=value;}
    for(const waiter of [...state.waiters]){
     if(waiter.types.includes(type)||(waiter.types.includes('__ANSWER__')&&(state.answer||state.ended))||(waiter.types.includes('__DTMF__')&&(state.digit||state.ended))){
-     clearTimeout(waiter.timer);state.waiters.delete(waiter);waiter.resolve(event);
+     clearTimeout(waiter.timer);state.waiters.delete(waiter);if(waiter.types.includes(type))state.events.delete(type);waiter.resolve(event);
     }
    }
   }
@@ -77,6 +77,7 @@ export class InfobipTelephonyProvider implements TelephonyProvider {
   const state=this.state(id);
   const cached=types.map(type=>state.events.get(type)).find(Boolean);if(cached){state.events.delete(normalizeEventType(cached.type));return Promise.resolve(cached);}
   if(types.includes('__ANSWER__')&&(state.answer||state.ended))return Promise.resolve(null);
+  if(types.includes('__DTMF__')&&(state.digit||state.ended))return Promise.resolve(null);
   if(types.includes('__DTMF__')&&(state.digit||state.ended))return Promise.resolve(null);
   return new Promise(resolve=>{const waiter:EventWaiter={types,resolve,timer:setTimeout(()=>{state.waiters.delete(waiter);resolve(null);},timeoutMs)};state.waiters.add(waiter);});
  }
